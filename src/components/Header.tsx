@@ -5,7 +5,8 @@ import { TeamRecord } from '../types';
 interface HeaderProps {
   mode: 'trial' | 'event' | null;
   activeTeam?: TeamRecord;
-  onOpenOrganizer: () => void;
+  isAdmin?: boolean;
+  onOpenOrganizer?: () => void;
   onLogout?: () => void;
   onBack?: () => void;
   currentLevel?: number;
@@ -16,6 +17,7 @@ interface HeaderProps {
 export const Header: React.FC<HeaderProps> = ({
   mode,
   activeTeam,
+  isAdmin = false,
   onOpenOrganizer,
   onLogout,
   onBack,
@@ -146,23 +148,25 @@ export const Header: React.FC<HeaderProps> = ({
           </button>
         )}
 
-        <button
-          onClick={onOpenOrganizer}
-          title="Organizer Console"
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: '32px',
-            height: '32px',
-            borderRadius: 'var(--radius-sm)',
-            backgroundColor: 'var(--bg-surface-elevated)',
-            border: '1px solid var(--border-structural)',
-            color: 'var(--accent-amber)'
-          }}
-        >
-          <Shield size={16} />
-        </button>
+        {isAdmin && onOpenOrganizer && (
+          <button
+            onClick={onOpenOrganizer}
+            title="Organizer Console"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: '32px',
+              height: '32px',
+              borderRadius: 'var(--radius-sm)',
+              backgroundColor: 'var(--bg-surface-elevated)',
+              border: '1px solid var(--border-structural)',
+              color: 'var(--accent-amber)'
+            }}
+          >
+            <Shield size={16} />
+          </button>
+        )}
       </div>
     </header>
   );

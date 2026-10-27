@@ -298,6 +298,12 @@ export const GameScreen: React.FC<GameScreenProps> = ({
                 paddingRight: '3rem',
                 borderColor: feedback.status === 'correct' ? 'var(--status-green)' : feedback.status === 'incorrect' ? 'var(--status-red)' : undefined
               }}
+              /* ── Copy / Cut / Paste / Drag-drop deterrents ── */
+              onCopy={(e) => e.preventDefault()}
+              onCut={(e) => e.preventDefault()}
+              onPaste={(e) => e.preventDefault()}
+              onDrop={(e) => e.preventDefault()}
+              onDragOver={(e) => e.preventDefault()}
             />
 
             {inputVal.length > 0 && (

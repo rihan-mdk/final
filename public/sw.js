@@ -1,4 +1,4 @@
-const CACHE_NAME = 'hunt-expedition-offline-v1';
+const CACHE_NAME = 'hunt-expedition-offline-v2';
 const PRECACHE_ASSETS = [
   './',
   './index.html',

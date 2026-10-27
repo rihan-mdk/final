@@ -8,6 +8,7 @@ interface ExpeditionCompleteScreenProps {
   team: TeamRecord;
   elapsedSeconds: number;
   mode: 'trial' | 'event';
+  isAdmin?: boolean;
   onReturnHome: () => void;
   onOpenOrganizer: () => void;
 }
@@ -16,6 +17,7 @@ export const ExpeditionCompleteScreen: React.FC<ExpeditionCompleteScreenProps> =
   team,
   elapsedSeconds,
   mode,
+  isAdmin = false,
   onReturnHome,
   onOpenOrganizer
 }) => {
@@ -110,10 +112,12 @@ export const ExpeditionCompleteScreen: React.FC<ExpeditionCompleteScreenProps> =
         <button className="btn btn-primary" onClick={onReturnHome} style={{ minHeight: '52px' }}>
           Return to Expedition Home
         </button>
-        <button className="btn btn-secondary" onClick={onOpenOrganizer}>
-          <Shield size={16} />
-          Organizer Telemetry & CSV Export
-        </button>
+        {isAdmin && (
+          <button className="btn btn-secondary" onClick={onOpenOrganizer}>
+            <Shield size={16} />
+            Organizer Telemetry & CSV Export
+          </button>
+        )}
       </div>
     </div>
   );

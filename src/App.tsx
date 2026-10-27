@@ -3,6 +3,7 @@ import { Header } from './components/Header';
 import { PinModal } from './components/PinModal';
 import { SplashScreen } from './pages/SplashScreen';
 import { LoginScreen } from './pages/LoginScreen';
+import { WelcomeScreen } from './pages/WelcomeScreen';
 import { GameScreen } from './pages/GameScreen';
 import { LevelCompleteScreen } from './pages/LevelCompleteScreen';
 import { ExpeditionCompleteScreen } from './pages/ExpeditionCompleteScreen';
@@ -10,6 +11,7 @@ import { TrialDashboardScreen } from './pages/TrialDashboardScreen';
 import { OrganizerDashboardScreen } from './pages/OrganizerDashboardScreen';
 import { StorageService } from './lib/storage/storageService';
 import { GameSession, Question, TeamRecord } from './types';
+import { calculateElapsedSeconds } from './lib/timer/timerUtils';
 import rawQuestions from './data/questions.json';
 
 const questions = rawQuestions as unknown as Question[];
@@ -17,6 +19,7 @@ const questions = rawQuestions as unknown as Question[];
 export type AppView = 
   | 'splash'
   | 'login'
+  | 'welcome'
   | 'game'
   | 'level-complete'
   | 'expedition-complete'
@@ -32,12 +35,13 @@ export const App: React.FC = () => {
 
   // Authenticated participant team
   const [loggedInTeamId, setLoggedInTeamId] = useState<string | null>(StorageService.getLoggedInTeamId());
-  const [appMode, setAppMode] = useState<'trial' | 'event'>('event');
+  const [appMode, setAppMode] = useState<'trial' | 'event'>(() => StorageService.getAppMode() || 'event');
 
   // Game session
   const [session, setSession] = useState<GameSession | null>(() => {
     const tid = StorageService.getLoggedInTeamId();
-    return tid ? StorageService.getEventSession(tid) : null;
+    const mode = StorageService.getAppMode() || 'event';
+    return tid ? StorageService.getSession(mode, tid) : null;
   });
 
   // Track online/offline status
@@ -58,21 +62,25 @@ export const App: React.FC = () => {
     : undefined;
 
   // Session retrieval/creation
-  const getOrCreateSession = (teamId: string, initialQId = 1): GameSession => {
-    const existing = StorageService.getEventSession(teamId);
+  const getOrCreateSession = (
+    teamId: string,
+    initialQId = 1,
+    mode: 'trial' | 'event' = 'event'
+  ): GameSession => {
+    const existing = StorageService.getSession(mode, teamId);
     if (existing) {
       return existing;
     }
 
     const newSession: GameSession = {
       teamId,
-      mode: 'event',
+      mode,
       currentLevel: Math.ceil(initialQId / 10),
       currentQuestionId: initialQId,
       completedQuestionIds: [],
       wrongAttemptsByQuestion: {},
       totalAttemptsByQuestion: {},
-      startTime: Date.now(),
+      startTime: null, // Timer starts when START THE HUNT is clicked
       endTime: null,
       elapsedSeconds: 0,
       isPaused: false,
@@ -81,16 +89,6 @@ export const App: React.FC = () => {
     };
 
     StorageService.saveSession(newSession);
-
-    // Update team initial start time
-    const team = StorageService.getTeam(teamId);
-    if (team) {
-      team.startTime = team.startTime || new Date().toISOString();
-      team.status = 'in_progress';
-      team.mode = 'event';
-      StorageService.updateTeam(team);
-    }
-
     return newSession;
   };
 
@@ -106,15 +104,59 @@ export const App: React.FC = () => {
   };
 
   const handleLoginSuccess = (team: TeamRecord) => {
+    setIsAdminAuthenticated(false);
     setLoggedInTeamId(team.id);
     StorageService.setLoggedInTeamId(team.id);
     StorageService.setActiveTeamId(team.id);
-    setAppMode('event');
 
-    const teamSession = getOrCreateSession(team.id);
+    const chosenMode = team.mode === 'trial' ? 'trial' : (StorageService.getAppMode() || appMode || 'event');
+    setAppMode(chosenMode);
+    StorageService.setAppMode(chosenMode);
+
+    const teamSession = getOrCreateSession(team.id, 1, chosenMode);
     setSession(teamSession);
 
-    if (teamSession.status === 'completed') {
+    // After a team logs in successfully, show dedicated welcome screen
+    setCurrentView('welcome');
+  };
+
+  const handleStartHunt = () => {
+    const tid = loggedInTeamId || session?.teamId;
+    if (!tid) {
+      setCurrentView('login');
+      return;
+    }
+
+    const currentMode = appMode;
+    let currentSession = session || getOrCreateSession(tid, 1, currentMode);
+
+    // Timer Behaviour:
+    // Start elapsed-time timer when START THE HUNT is clicked, NOT when logging in.
+    // If the hunt has already started previously, revisiting the welcome screen must NOT reset or restart the timer.
+    if (!currentSession.startTime) {
+      const nowMs = Date.now();
+      currentSession = {
+        ...currentSession,
+        startTime: nowMs,
+        status: currentSession.status === 'completed' ? 'completed' : 'active'
+      };
+      StorageService.saveSession(currentSession);
+      setSession(currentSession);
+
+      if (currentMode === 'event') {
+        const team = StorageService.getTeam(tid);
+        if (team) {
+          team.startTime = team.startTime || new Date(nowMs).toISOString();
+          if (team.status === 'not_started') {
+            team.status = 'in_progress';
+          }
+          team.mode = 'event';
+          StorageService.updateTeam(team);
+        }
+      }
+    }
+
+    if (currentSession.status === 'completed') {
       setCurrentView('expedition-complete');
     } else {
       setCurrentView('game');
@@ -123,6 +165,7 @@ export const App: React.FC = () => {
 
   const handleLogout = () => {
     StorageService.logout();
+    setIsAdminAuthenticated(false);
     setLoggedInTeamId(null);
     setSession(null);
     setCurrentView('login');
@@ -141,12 +184,22 @@ export const App: React.FC = () => {
     const isLevelMilestone = questionId % 10 === 0;
     const isFinalQuestion = questionId === 40;
 
+    const nowMs = Date.now();
+    const currentElapsed = calculateElapsedSeconds(
+      session.startTime,
+      isFinalQuestion ? nowMs : session.endTime,
+      session.isPaused,
+      session.pausedAt,
+      session.elapsedSeconds
+    );
+
     const updatedSession: GameSession = {
       ...session,
       completedQuestionIds: updatedCompleted,
       currentQuestionId: nextQId <= 40 ? nextQId : 40,
       currentLevel: Math.min(4, Math.ceil(nextQId / 10)),
-      endTime: isFinalQuestion ? Date.now() : session.endTime,
+      endTime: isFinalQuestion ? nowMs : session.endTime,
+      elapsedSeconds: currentElapsed,
       status: isFinalQuestion ? 'completed' : 'active'
     };
 
@@ -160,6 +213,7 @@ export const App: React.FC = () => {
         team.completedQuestionIds = updatedCompleted;
         team.currentQuestionId = updatedSession.currentQuestionId;
         team.currentLevel = updatedSession.currentLevel;
+        team.elapsedSeconds = currentElapsed;
         if (isFinalQuestion) {
           team.completionTime = new Date().toISOString();
           team.status = 'completed';
@@ -235,13 +289,18 @@ export const App: React.FC = () => {
         <Header
           mode={appMode}
           activeTeam={activeTeam}
-          onOpenOrganizer={() => navigateToView('organizer-dashboard')}
+          isAdmin={isAdminAuthenticated && (currentView === 'organizer-dashboard' || currentView === 'trial-dashboard')}
+          onOpenOrganizer={
+            (currentView === 'organizer-dashboard' || currentView === 'trial-dashboard') && isAdminAuthenticated
+              ? () => navigateToView('organizer-dashboard')
+              : undefined
+          }
           onLogout={handleLogout}
           onBack={
             currentView === 'trial-dashboard' || currentView === 'organizer-dashboard'
               ? () => {
                   if (loggedInTeamId) {
-                    setCurrentView('game');
+                    setCurrentView(session?.startTime ? 'game' : 'welcome');
                   } else {
                     setCurrentView('login');
                   }
@@ -259,9 +318,15 @@ export const App: React.FC = () => {
           <SplashScreen
             onComplete={() => {
               if (loggedInTeamId) {
-                const s = getOrCreateSession(loggedInTeamId);
+                const s = getOrCreateSession(loggedInTeamId, 1, appMode);
                 setSession(s);
-                setCurrentView(s.status === 'completed' ? 'expedition-complete' : 'game');
+                if (s.status === 'completed') {
+                  setCurrentView('expedition-complete');
+                } else if (s.startTime) {
+                  setCurrentView('game');
+                } else {
+                  setCurrentView('welcome');
+                }
               } else {
                 setCurrentView('login');
               }
@@ -276,6 +341,17 @@ export const App: React.FC = () => {
               setIsAdminAuthenticated(true);
               setCurrentView('organizer-dashboard');
             }}
+          />
+        )}
+
+        {currentView === 'welcome' && (activeTeam || StorageService.getTeam(loggedInTeamId || '')) && (
+          <WelcomeScreen
+            team={(activeTeam || StorageService.getTeam(loggedInTeamId || ''))!}
+            mode={appMode}
+            currentLevel={session?.currentLevel || 1}
+            currentQuestionNum={currentQuestion.num}
+            isHuntStarted={Boolean(session?.startTime)}
+            onStartHunt={handleStartHunt}
           />
         )}
 
@@ -309,6 +385,7 @@ export const App: React.FC = () => {
             team={activeTeam}
             elapsedSeconds={session.elapsedSeconds}
             mode={appMode}
+            isAdmin={isAdminAuthenticated}
             onReturnHome={() => setCurrentView('game')}
             onOpenOrganizer={() => navigateToView('organizer-dashboard')}
           />
@@ -347,9 +424,9 @@ export const App: React.FC = () => {
             onBack={() => {
               if (loggedInTeamId) {
                 setAppMode('event');
-                const s = getOrCreateSession(loggedInTeamId);
+                const s = getOrCreateSession(loggedInTeamId, 1, 'event');
                 setSession(s);
-                setCurrentView('game');
+                setCurrentView(s.startTime ? 'game' : 'welcome');
               } else {
                 setCurrentView('login');
               }
@@ -357,9 +434,9 @@ export const App: React.FC = () => {
             onLaunchEvent={() => {
               if (loggedInTeamId) {
                 setAppMode('event');
-                const s = getOrCreateSession(loggedInTeamId);
+                const s = getOrCreateSession(loggedInTeamId, 1, 'event');
                 setSession(s);
-                setCurrentView('game');
+                setCurrentView(s.startTime ? 'game' : 'welcome');
               } else {
                 setCurrentView('login');
               }
