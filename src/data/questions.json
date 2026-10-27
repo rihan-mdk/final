@@ -1,0 +1,636 @@
+[
+  {
+    "id": 1,
+    "num": "Q1",
+    "level": 1,
+    "title": "The Silent Keeper",
+    "question": "I have pages but am not a tree. I hold stories but never speak. What am I?",
+    "type": "digital",
+    "answerFormat": "text",
+    "acceptedAnswers": [
+      "Book",
+      "A book"
+    ],
+    "explanation": "A book has pages and holds stories without speaking.",
+    "reviewNotes": "Expected answer: Book."
+  },
+  {
+    "id": 2,
+    "num": "Q2",
+    "level": 1,
+    "title": "The More You Take",
+    "question": "The more steps you take, the more of these you leave behind. What are they?",
+    "type": "digital",
+    "answerFormat": "text",
+    "acceptedAnswers": [
+      "Footprints",
+      "Footprint",
+      "Footsteps",
+      "Footstep",
+      "Steps"
+    ],
+    "explanation": "With every step taken, footprints/footsteps are left behind.",
+    "reviewNotes": "Expected answer: Footprints."
+  },
+  {
+    "id": 3,
+    "num": "Q3",
+    "level": 1,
+    "title": "Clock Angle",
+    "question": "At 3:15, what is the smaller angle between the hands of an analogue clock in degrees? (Enter the number only)",
+    "type": "digital",
+    "answerFormat": "numeric",
+    "acceptedAnswers": [
+      "7.5",
+      "7.5 degrees",
+      "7.5°",
+      "7.5 deg"
+    ],
+    "explanation": "At 3:15, the minute hand is at 90°. The hour hand is at 3 + 15/60 = 3.25 hours = 97.5°. Angle difference = 97.5° - 90° = 7.5°.",
+    "reviewNotes": "Calculates smaller angle at 3:15 accounting for hour hand movement: 7.5 degrees."
+  },
+  {
+    "id": 4,
+    "num": "Q4",
+    "level": 1,
+    "title": "Odd One Out",
+    "question": "Which does not belong: triangle, square, circle, cube?",
+    "type": "digital",
+    "answerFormat": "text",
+    "acceptedAnswers": [
+      "Cube",
+      "A cube"
+    ],
+    "explanation": "Cube is a 3-dimensional solid, whereas triangle, square, and circle are 2-dimensional plane shapes.",
+    "reviewNotes": "Expected answer: Cube."
+  },
+  {
+    "id": 5,
+    "num": "Q5",
+    "level": 1,
+    "title": "Letter Steps",
+    "question": "Continue: A, C, F, J, O, __.",
+    "type": "digital",
+    "answerFormat": "text",
+    "acceptedAnswers": [
+      "U",
+      "Letter U"
+    ],
+    "explanation": "A(+2)->C(+3)->F(+4)->J(+5)->O(+6)->U (15 + 6 = 21st letter, which is U).",
+    "reviewNotes": "Expected answer: U."
+  },
+  {
+    "id": 6,
+    "num": "Q6",
+    "level": 1,
+    "title": "Library Code",
+    "question": "Using A=1 through Z=26, decode 3-1-20.",
+    "type": "digital",
+    "answerFormat": "text",
+    "acceptedAnswers": [
+      "CAT"
+    ],
+    "explanation": "3=C, 1=A, 20=T -> CAT.",
+    "reviewNotes": "Expected answer: CAT."
+  },
+  {
+    "id": 7,
+    "num": "Q7",
+    "level": 1,
+    "title": "Two Fathers",
+    "question": "Two fathers and two sons share three apples, one each. How many people?",
+    "type": "digital",
+    "answerFormat": "numeric",
+    "acceptedAnswers": [
+      "3",
+      "3 people",
+      "Three",
+      "Three people"
+    ],
+    "explanation": "There are 3 people: a grandfather, his son (who is also a father), and his grandson.",
+    "reviewNotes": "Expected answer: 3 people."
+  },
+  {
+    "id": 8,
+    "num": "Q8",
+    "level": 1,
+    "title": "Battery Hours",
+    "question": "Four batteries each power a torch for 2 hours, one at a time. How many total hours does the torch run? (Enter the number only)",
+    "type": "digital",
+    "answerFormat": "numeric",
+    "acceptedAnswers": [
+      "8",
+      "8 hours",
+      "8 hrs"
+    ],
+    "explanation": "4 batteries * 2 hours each = 8 total hours.",
+    "reviewNotes": "Expected answer: 8 hours (numeric)."
+  },
+  {
+    "id": 9,
+    "num": "Q9",
+    "level": 1,
+    "title": "Mirror Letter",
+    "question": "Which capital letter is vertically symmetrical: A, F, G, or R?",
+    "type": "digital",
+    "answerFormat": "text",
+    "acceptedAnswers": [
+      "A",
+      "Letter A"
+    ],
+    "explanation": "The letter 'A' possesses a vertical line of reflective symmetry.",
+    "reviewNotes": "Expected answer: A."
+  },
+  {
+    "id": 10,
+    "num": "Q10",
+    "level": 1,
+    "title": "Expedition End",
+    "question": "What letter ends both EXPEDITION and DESTINATION?",
+    "type": "digital",
+    "answerFormat": "text",
+    "acceptedAnswers": [
+      "N",
+      "Letter N"
+    ],
+    "explanation": "Both 'EXPEDITION' and 'DESTINATION' end with the letter 'N'.",
+    "reviewNotes": "Expected answer: N."
+  },
+  {
+    "id": 11,
+    "num": "Q11",
+    "level": 2,
+    "title": "Caesar Shift",
+    "question": "Shift each letter one place backward: DBU. Decode it.",
+    "type": "digital",
+    "answerFormat": "text",
+    "acceptedAnswers": [
+      "CAT"
+    ],
+    "explanation": "D-1=C, B-1=A, U-1=T -> CAT.",
+    "reviewNotes": "Expected answer: CAT."
+  },
+  {
+    "id": 12,
+    "num": "Q12",
+    "level": 2,
+    "title": "Binary Trail",
+    "question": "Convert binary 1010 to decimal.",
+    "type": "digital",
+    "answerFormat": "numeric",
+    "acceptedAnswers": [
+      "10",
+      "Ten"
+    ],
+    "explanation": "1010 in binary = 1*(8) + 0*(4) + 1*(2) + 0*(1) = 10.",
+    "reviewNotes": "Expected answer: 10."
+  },
+  {
+    "id": 13,
+    "num": "Q13",
+    "level": 2,
+    "title": "Pattern Lock",
+    "question": "Find the next number: 2, 6, 12, 20, 30, __.",
+    "type": "digital",
+    "answerFormat": "numeric",
+    "acceptedAnswers": [
+      "42",
+      "Forty-two",
+      "Forty two"
+    ],
+    "explanation": "Pattern n*(n+1): 1*2=2, 2*3=6, 3*4=12, 4*5=20, 5*6=30, 6*7=42. Alternatively, differences +4, +6, +8, +10, +12 -> 30 + 12 = 42.",
+    "reviewNotes": "Expected answer: 42."
+  },
+  {
+    "id": 14,
+    "num": "Q14",
+    "level": 2,
+    "title": "Anagram Signal",
+    "question": "Rearrange LISTEN to make a word meaning quiet.",
+    "type": "digital",
+    "answerFormat": "text",
+    "acceptedAnswers": [
+      "SILENT"
+    ],
+    "explanation": "Rearranging LISTEN gives SILENT.",
+    "reviewNotes": "Expected answer: SILENT."
+  },
+  {
+    "id": 15,
+    "num": "Q15",
+    "level": 2,
+    "title": "Three Switches",
+    "question": "Three switches outside a closed room control an incandescent bulb inside. You may enter the room only once. Besides light, what physical property of the bulb allows you to identify which switch was turned on? (Enter one word)",
+    "type": "digital",
+    "answerFormat": "text",
+    "acceptedAnswers": [
+      "Heat",
+      "Temperature",
+      "Warmth"
+    ],
+    "explanation": "Incandescent bulbs emit heat. Leaving switch 1 on for 10 minutes then turning it off and turning switch 2 on allows checking which is on (light), which is off but warm (heat), and which is cold.",
+    "reviewNotes": "Classic three switches problem. Accepted: Heat, Temperature, Warmth."
+  },
+  {
+    "id": 16,
+    "num": "Q16",
+    "level": 2,
+    "title": "HTTPS",
+    "question": "What does HTTPS primarily provide for a web connection? (Enter as a two-word phrase)",
+    "type": "digital",
+    "answerFormat": "two-word",
+    "acceptedAnswers": [
+      "Secure communication",
+      "Encrypted communication",
+      "Secure connection",
+      "Encrypted connection",
+      "Data encryption",
+      "Transport security",
+      "Connection security"
+    ],
+    "explanation": "HTTPS primarily provides secure communication / encrypted communication over computer networks.",
+    "reviewNotes": "Explicitly requests a two-word phrase. Accepted: Secure communication, Encrypted communication, etc."
+  },
+  {
+    "id": 17,
+    "num": "Q17",
+    "level": 2,
+    "title": "Number Cipher",
+    "question": "Using A=1, CODE is 3-15-4-5. What is the sum?",
+    "type": "digital",
+    "answerFormat": "numeric",
+    "acceptedAnswers": [
+      "27",
+      "Twenty seven",
+      "Twenty-seven"
+    ],
+    "explanation": "3 + 15 + 4 + 5 = 27.",
+    "reviewNotes": "Expected answer: 27."
+  },
+  {
+    "id": 18,
+    "num": "Q18",
+    "level": 2,
+    "title": "Logic Line",
+    "question": "Mira is ahead of Sam. Sam is ahead of Jo. Who is last?",
+    "type": "digital",
+    "answerFormat": "text",
+    "acceptedAnswers": [
+      "Jo"
+    ],
+    "explanation": "Order from front to back: Mira -> Sam -> Jo. Last is Jo.",
+    "reviewNotes": "Expected answer: Jo."
+  },
+  {
+    "id": 19,
+    "num": "Q19",
+    "level": 2,
+    "title": "QR Knowledge",
+    "question": "A QR code is what kind of code? (Enter as a three-word phrase)",
+    "type": "digital",
+    "answerFormat": "three-word",
+    "acceptedAnswers": [
+      "Two dimensional code",
+      "Two-dimensional code",
+      "Quick response code",
+      "Two dimension code",
+      "2 dimensional code",
+      "2-dimensional code",
+      "Two dimensional barcode"
+    ],
+    "explanation": "A QR code (Quick Response Code) is a two-dimensional code (or barcode).",
+    "reviewNotes": "Explicitly requests a three-word phrase. Accepted: Two-dimensional code, Quick response code, etc."
+  },
+  {
+    "id": 20,
+    "num": "Q20",
+    "level": 2,
+    "title": "Reverse Trail",
+    "question": "Reverse LEVEL. What word do you get?",
+    "type": "digital",
+    "answerFormat": "text",
+    "acceptedAnswers": [
+      "LEVEL"
+    ],
+    "explanation": "LEVEL is a palindrome; reversed it is still LEVEL.",
+    "reviewNotes": "Expected answer: LEVEL."
+  },
+  {
+    "id": 21,
+    "num": "Q21",
+    "level": 3,
+    "title": "Truth and Lie",
+    "question": "Exactly one statement is true. A: “B is lying.” B: “A and I are both lying.” Who tells the truth?",
+    "type": "digital",
+    "answerFormat": "text",
+    "acceptedAnswers": [
+      "A",
+      "Person A",
+      "Statement A"
+    ],
+    "explanation": "If B were telling the truth, then B would be lying (contradiction). Thus B is lying. Since B is lying, A's assertion that B is lying is TRUE. Therefore, A tells the truth.",
+    "reviewNotes": "Expected answer: A."
+  },
+  {
+    "id": 22,
+    "num": "Q22",
+    "level": 3,
+    "title": "Grid Coordinates",
+    "question": "Start at (2,3). Move 4 east and 2 south. Final coordinates? (Format: (x,y) with parentheses)",
+    "type": "digital",
+    "answerFormat": "coordinate",
+    "acceptedAnswers": [
+      "(6,1)",
+      "(6, 1)"
+    ],
+    "explanation": "Moving east increases x: 2 + 4 = 6. Moving south decreases y: 3 - 2 = 1. Final coordinates: (6,1).",
+    "reviewNotes": "Expected answer: (6,1). Accepts (6,1) and (6, 1)."
+  },
+  {
+    "id": 23,
+    "num": "Q23",
+    "level": 3,
+    "title": "Hexadecimal",
+    "question": "Convert hexadecimal 2F to decimal.",
+    "type": "digital",
+    "answerFormat": "numeric",
+    "acceptedAnswers": [
+      "47",
+      "Forty-seven",
+      "Forty seven"
+    ],
+    "explanation": "2F in hex = 2*16 + 15 = 47.",
+    "reviewNotes": "Expected answer: 47."
+  },
+  {
+    "id": 24,
+    "num": "Q24",
+    "level": 3,
+    "title": "Three Boxes",
+    "question": "Boxes labelled APPLES, ORANGES, MIXED all have wrong labels. From which box should you draw one fruit to identify all boxes?",
+    "type": "digital",
+    "answerFormat": "text",
+    "acceptedAnswers": [
+      "MIXED",
+      "The mixed box",
+      "Mixed box",
+      "Box labelled mixed",
+      "The box labelled mixed"
+    ],
+    "explanation": "Since all labels are false, the box labelled MIXED cannot contain mixed fruit; it is either purely apples or purely oranges. One fruit reveals its true contents, allowing the other two boxes to be deduced.",
+    "reviewNotes": "Expected answer: MIXED."
+  },
+  {
+    "id": 25,
+    "num": "Q25",
+    "level": 3,
+    "title": "Bubble Sort",
+    "question": "After one left-to-right bubble-sort pass ascending, what is [8,3,5,1]? (Format: comma-separated numbers, e.g. 1,2,3,4)",
+    "type": "digital",
+    "answerFormat": "sequence",
+    "acceptedAnswers": [
+      "3,5,1,8",
+      "3, 5, 1, 8",
+      "[3,5,1,8]",
+      "[3, 5, 1, 8]"
+    ],
+    "explanation": "Pass 1: Compare 8,3 -> swap (3,8,5,1). Compare 8,5 -> swap (3,5,8,1). Compare 8,1 -> swap (3,5,1,8). Result: 3,5,1,8.",
+    "reviewNotes": "Requires exactly one left-to-right ascending bubble-sort pass, not a full sort: 3,5,1,8."
+  },
+  {
+    "id": 26,
+    "num": "Q26",
+    "level": 3,
+    "title": "Network Route",
+    "question": "Links A→B, B→C, and C→D take 4 ms, 7 ms, and 3 ms respectively. What is the total latency in milliseconds? (Enter the number only)",
+    "type": "digital",
+    "answerFormat": "numeric",
+    "acceptedAnswers": [
+      "14",
+      "14 ms",
+      "14ms"
+    ],
+    "explanation": "4 + 7 + 3 = 14 ms.",
+    "reviewNotes": "Expected answer: 14."
+  },
+  {
+    "id": 27,
+    "num": "Q27",
+    "level": 3,
+    "title": "Coin Probability",
+    "question": "A fair coin is flipped twice. Probability of two heads? (Format: fraction x/y or decimal 0.xx)",
+    "type": "digital",
+    "answerFormat": "probability",
+    "acceptedAnswers": [
+      "1/4",
+      "0.25",
+      "25%",
+      "1 / 4"
+    ],
+    "explanation": "Four equally likely outcomes: HH, HT, TH, TT. P(HH) = 1/4 = 0.25.",
+    "reviewNotes": "Expected answer: 1/4 or 0.25."
+  },
+  {
+    "id": 28,
+    "num": "Q28",
+    "level": 3,
+    "title": "Handshake Count",
+    "question": "Three people each shake hands with every other person once. Total handshakes?",
+    "type": "digital",
+    "answerFormat": "numeric",
+    "acceptedAnswers": [
+      "3",
+      "Three",
+      "3 handshakes"
+    ],
+    "explanation": "Number of combinations 3C2 = (3 * 2) / 2 = 3 handshakes.",
+    "reviewNotes": "Expected answer: 3."
+  },
+  {
+    "id": 29,
+    "num": "Q29",
+    "level": 3,
+    "title": "Hash Clue",
+    "question": "A cryptographic hash function processes input data of any size to produce a fixed-length output known as a what? (Enter one word)",
+    "type": "digital",
+    "answerFormat": "text",
+    "acceptedAnswers": [
+      "Digest",
+      "Hash",
+      "Checksum"
+    ],
+    "explanation": "The output of a cryptographic hash function is commonly called a digest (or message digest / hash / checksum).",
+    "reviewNotes": "Expected answer: Digest."
+  },
+  {
+    "id": 30,
+    "num": "Q30",
+    "level": 3,
+    "title": "Sequence Deduction",
+    "question": "Find the next number: 1, 1, 2, 3, 5, 8, __.",
+    "type": "digital",
+    "answerFormat": "numeric",
+    "acceptedAnswers": [
+      "13",
+      "Thirteen"
+    ],
+    "explanation": "Fibonacci sequence: 1+1=2, 1+2=3, 2+3=5, 3+5=8, 5+8=13.",
+    "reviewNotes": "Expected answer: 13."
+  },
+  {
+    "id": 31,
+    "num": "Q31",
+    "level": 4,
+    "title": "Checkpoint Cipher",
+    "question": "At an organizer-placed checkpoint card,",
+    "type": "checkpoint",
+    "answerFormat": "text",
+    "acceptedAnswers": [
+      "TREASURE"
+    ],
+    "isPhysicalCheckpoint": true,
+    "checkpointInstructions": "Locate the physical checkpoint card at the designated expedition post. Decode the encoded message using the A=1 cipher.",
+    "explanation": "Physical Checkpoint 1: Participants locate the physical card and decode the message to obtain TREASURE (or obtain Organizer verification).",
+    "reviewNotes": "Q31 is explicitly marked as a physical-checkpoint question in source docx. Decodes to TREASURE."
+  },
+  {
+    "id": 32,
+    "num": "Q32",
+    "level": 4,
+    "title": "Canteen Calculation",
+    "question": "Three water bottles cost ₹20 each and two snacks cost ₹15 each. What is the total cost in rupees? (Enter the number only)",
+    "type": "digital",
+    "answerFormat": "numeric",
+    "acceptedAnswers": [
+      "90",
+      "90 rupees",
+      "₹90",
+      "Rs 90",
+      "Rs. 90"
+    ],
+    "explanation": "(3 * 20) + (2 * 15) = 60 + 30 = 90 rupees.",
+    "reviewNotes": "Expected answer: 90."
+  },
+  {
+    "id": 33,
+    "num": "Q33",
+    "level": 4,
+    "title": "Stage Geometry",
+    "question": "A rectangular stage is 8 m by 5 m. What is its perimeter in meters? (Enter the number only)",
+    "type": "digital",
+    "answerFormat": "numeric",
+    "acceptedAnswers": [
+      "26",
+      "26 meters",
+      "26m",
+      "26 m"
+    ],
+    "explanation": "Perimeter = 2 * (length + width) = 2 * (8 + 5) = 2 * 13 = 26 meters.",
+    "reviewNotes": "Expected answer: 26."
+  },
+  {
+    "id": 34,
+    "num": "Q34",
+    "level": 4,
+    "title": "Library Index",
+    "question": "Take the first letter of LIBRARY and the last letter of READ. What two-letter code results?",
+    "type": "digital",
+    "answerFormat": "text",
+    "acceptedAnswers": [
+      "LD"
+    ],
+    "explanation": "First letter of LIBRARY is 'L'; last letter of READ is 'D'. Result: LD.",
+    "reviewNotes": "Expected answer: LD."
+  },
+  {
+    "id": 35,
+    "num": "Q35",
+    "level": 4,
+    "title": "Route Planning",
+    "question": "A safe marked route P→Q→R→S takes 3, 5, and 4 minutes per leg. What is the total time in minutes? (Enter the number only)",
+    "type": "digital",
+    "answerFormat": "numeric",
+    "acceptedAnswers": [
+      "12",
+      "12 minutes",
+      "12 min",
+      "12 mins",
+      "12m"
+    ],
+    "explanation": "3 + 5 + 4 = 12 minutes total.",
+    "reviewNotes": "Expected answer: 12."
+  },
+  {
+    "id": 36,
+    "num": "Q36",
+    "level": 4,
+    "title": "Error Detection",
+    "question": "Using A=1, decode 3-1-20.",
+    "type": "digital",
+    "answerFormat": "text",
+    "acceptedAnswers": [
+      "CAT"
+    ],
+    "explanation": "3=C, 1=A, 20=T -> CAT.",
+    "reviewNotes": "Expected answer: CAT."
+  },
+  {
+    "id": 37,
+    "num": "Q37",
+    "level": 4,
+    "title": "Binary Checksum",
+    "question": "Add binary 101 and 011. Give the answer in binary.",
+    "type": "digital",
+    "answerFormat": "binary",
+    "acceptedAnswers": [
+      "1000"
+    ],
+    "explanation": "101 (binary 5) + 011 (binary 3) = 8 in decimal = 1000 in binary.",
+    "reviewNotes": "Expected answer: 1000 (binary)."
+  },
+  {
+    "id": 38,
+    "num": "Q38",
+    "level": 4,
+    "title": "Observation Card",
+    "question": "An organizer-placed card",
+    "type": "checkpoint",
+    "answerFormat": "binary",
+    "acceptedAnswers": [
+      "10110"
+    ],
+    "isPhysicalCheckpoint": true,
+    "checkpointInstructions": "Locate the Observation Card stationed at the designated coordinate. Inspect the five-bit binary verification key.",
+    "explanation": "Physical Checkpoint 2: Observation Card inspection yielding binary code 10110 or organizer confirmation.",
+    "reviewNotes": "Q38 is explicitly marked as a physical-checkpoint question in source docx. Expected 5-bit binary: 10110."
+  },
+  {
+    "id": 39,
+    "num": "Q39",
+    "level": 4,
+    "title": "Missing Number",
+    "question": "Three consecutive even numbers sum to 42. What is the middle number?",
+    "type": "digital",
+    "answerFormat": "numeric",
+    "acceptedAnswers": [
+      "14",
+      "Fourteen"
+    ],
+    "explanation": "Let numbers be x-2, x, x+2. Sum = 3x = 42 -> x = 14. (Numbers are 12, 14, 16). Middle number is 14.",
+    "reviewNotes": "Expected answer: 14."
+  },
+  {
+    "id": 40,
+    "num": "Q40",
+    "level": 4,
+    "title": "Expedition Checkpoint",
+    "question": "Take the first letter of COMPASS, last letter of MAP, and first letter of TRAIL. Code?",
+    "type": "digital",
+    "answerFormat": "text",
+    "acceptedAnswers": [
+      "CPT"
+    ],
+    "explanation": "COMPASS -> 'C', MAP -> 'P', TRAIL -> 'T'. Result: CPT.",
+    "reviewNotes": "Expected answer: CPT."
+  }
+]

@@ -1,0 +1,289 @@
+:root {
+  --bg-canvas: #121416;
+  --bg-surface: #1a1c1e;
+  --bg-surface-elevated: #262b30;
+  --bg-surface-high: #2f343a;
+  --bg-surface-lowest: #0c0e10;
+  
+  --border-structural: #353b41;
+  --border-subtle: #24292f;
+  --border-active: #e8ac50;
+  --border-focus: #ffc97d;
+
+  --text-primary: #f6f2e9;
+  --text-secondary: #a5adb5;
+  --text-muted: #6e7681;
+  --text-dark: #121416;
+
+  --accent-amber: #e8ac50;
+  --accent-amber-hover: #f9bb5e;
+  --accent-amber-muted: rgba(232, 172, 80, 0.15);
+
+  --status-green: #42b883;
+  --status-green-bg: rgba(66, 184, 131, 0.15);
+  --status-green-border: rgba(66, 184, 131, 0.4);
+
+  --status-red: #f16b68;
+  --status-red-bg: rgba(241, 107, 104, 0.15);
+  --status-red-border: rgba(241, 107, 104, 0.4);
+
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 10px;
+  --radius-pill: 9999px;
+
+  --shadow-subtle: 0 2px 8px rgba(0, 0, 0, 0.4);
+  --shadow-elevated: 0 8px 24px rgba(0, 0, 0, 0.6);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+  width: 100%;
+  min-height: 100vh;
+  background-color: var(--bg-canvas);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  line-height: 1.5;
+  overflow-x: hidden;
+}
+
+/* App container constrained for field ergonomics on both mobile and desktop */
+.app-viewport {
+  max-width: 580px;
+  margin: 0 auto;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg-canvas);
+  position: relative;
+  box-shadow: 0 0 60px rgba(0, 0, 0, 0.85);
+  border-left: 1px solid var(--border-subtle);
+  border-right: 1px solid var(--border-subtle);
+}
+
+@media (max-width: 600px) {
+  .app-viewport {
+    border-left: none;
+    border-right: none;
+  }
+}
+
+/* Typography Helpers */
+.font-mono {
+  font-family: var(--font-mono);
+}
+
+.text-title-xl {
+  font-size: 1.75rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.text-title-lg {
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+}
+
+.text-title-md {
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.text-caption {
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+/* Badges and Tags */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.72rem;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.badge-amber {
+  background-color: var(--accent-amber);
+  color: var(--text-dark);
+}
+
+.badge-amber-subtle {
+  background-color: var(--accent-amber-muted);
+  color: var(--accent-amber);
+  border: 1px solid rgba(232, 172, 80, 0.3);
+}
+
+.badge-green {
+  background-color: var(--status-green-bg);
+  color: var(--status-green);
+  border: 1px solid var(--status-green-border);
+}
+
+.badge-red {
+  background-color: var(--status-red-bg);
+  color: var(--status-red);
+  border: 1px solid var(--status-red-border);
+}
+
+.badge-neutral {
+  background-color: var(--bg-surface-elevated);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-structural);
+}
+
+/* Buttons */
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+  user-select: none;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 48px;
+  padding: 0.75rem 1.25rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: all 0.15s ease;
+  width: 100%;
+}
+
+.btn:active {
+  transform: scale(0.99);
+}
+
+.btn-primary {
+  background-color: var(--accent-amber);
+  color: var(--text-dark);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background-color: var(--accent-amber-hover);
+}
+
+.btn-secondary {
+  background-color: var(--bg-surface-elevated);
+  color: var(--text-primary);
+  border: 1px solid var(--border-structural);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background-color: var(--bg-surface-high);
+  border-color: var(--accent-amber);
+}
+
+.btn-danger {
+  background-color: var(--status-red-bg);
+  color: var(--status-red);
+  border: 1px solid var(--status-red-border);
+}
+
+.btn-danger:hover:not(:disabled) {
+  background-color: rgba(241, 107, 104, 0.25);
+}
+
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Interactive Input Controls */
+.input-field {
+  width: 100%;
+  height: 52px;
+  background-color: var(--bg-surface-high);
+  border: 1.5px solid var(--border-structural);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 1.05rem;
+  font-weight: 600;
+  padding: 0 1rem;
+  outline: none;
+  transition: border-color 0.2s, background-color 0.2s;
+}
+
+.input-field:focus {
+  border-color: var(--accent-amber);
+  background-color: var(--bg-surface-elevated);
+}
+
+.input-field::placeholder {
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+/* Cards & Modules */
+.card {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-structural);
+  border-radius: var(--radius-md);
+  padding: 1.15rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.card-elevated {
+  background-color: var(--bg-surface-elevated);
+  border: 1px solid var(--border-structural);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+}
+
+/* Progress Segment Bar */
+.progress-bar-container {
+  width: 100%;
+  height: 6px;
+  background-color: var(--bg-surface-high);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background-color: var(--accent-amber);
+  transition: width 0.35s ease;
+}
+
+/* Animations */
+@keyframes pulseSubtle {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+.pulse-animation {
+  animation: pulseSubtle 2s infinite ease-in-out;
+}
