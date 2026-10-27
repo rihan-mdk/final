@@ -33,7 +33,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({
   onRequestOrganizerPin
 }) => {
   const [inputVal, setInputVal] = useState('');
-  const [feedback, setFeedback] = useState<{ status: 'correct' | 'incorrect' | 'neutral' | null; message: string }>({
+  const [feedback, setFeedback] = useState<{ status: 'correct' | 'incorrect' | 'close' | 'neutral' | null; message: string }>({
     status: null,
     message: ''
   });
@@ -99,6 +99,14 @@ export const GameScreen: React.FC<GameScreenProps> = ({
         onCorrectAnswer(question.id);
         setIsSubmitting(false);
       }, 700);
+    } else if (result.isClose) {
+      setFeedback({
+        status: 'close',
+        message: result.feedbackMessage || "YOU'RE CLOSE! Try once again."
+      });
+      onIncorrectAnswer(question.id, trimmed);
+      setIsSubmitting(false);
+      inputRef.current?.focus();
     } else {
       setFeedback({
         status: 'incorrect',

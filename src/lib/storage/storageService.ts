@@ -7,7 +7,6 @@ const STORAGE_KEYS = {
   TRIAL_SESSION: 'hunt_expedition_trial_session_v2',
   TRIAL_CHECKLIST: 'hunt_expedition_trial_checklist_v2',
   ACTIVE_TEAM_ID: 'hunt_expedition_active_team_id_v2',
-  ASSIGNED_DEVICE_TEAM_ID: 'hunt_expedition_assigned_device_team_v2',
   LOGGED_IN_TEAM_ID: 'hunt_expedition_logged_in_team_v2',
   APP_MODE: 'hunt_expedition_app_mode_v2'
 } as const;
@@ -60,26 +59,12 @@ export const StorageService = {
       isSetupComplete: false,
       eventStarted: false,
       eventStartTime: null,
-      allowManualCheckpointBypass: true,
-      assignedTeamId: null
+      allowManualCheckpointBypass: true
     });
   },
 
   saveOrganizerConfig(config: OrganizerConfig): boolean {
     return safeSetItem(STORAGE_KEYS.ORGANIZER_CONFIG, config);
-  },
-
-  // Device Binding
-  getAssignedDeviceTeamId(): string | null {
-    return safeGetItem<string | null>(STORAGE_KEYS.ASSIGNED_DEVICE_TEAM_ID, null);
-  },
-
-  setAssignedDeviceTeamId(teamId: string | null): boolean {
-    const res = safeSetItem(STORAGE_KEYS.ASSIGNED_DEVICE_TEAM_ID, teamId);
-    const org = this.getOrganizerConfig();
-    org.assignedTeamId = teamId;
-    this.saveOrganizerConfig(org);
-    return res;
   },
 
   // Logged-in Participant State
@@ -157,11 +142,20 @@ export const StorageService = {
     return false;
   },
 
-  // Team Credential Authentication
+  // Administrator & Team Credential Authentication
+  authenticateAdmin(rawUsername: string, rawPassword: string): boolean {
+    return rawUsername.trim().toLowerCase() === 'cryptic' && rawPassword === 'adnan';
+  },
+
   authenticateTeam(rawTeamName: string, rawPassword: string): AuthResult {
     const trimmedName = rawTeamName.trim();
     if (!trimmedName || !rawPassword) {
       return { success: false, errorMessage: 'Please enter both team name and password.' };
+    }
+
+    // Check if Administrator credentials
+    if (this.authenticateAdmin(trimmedName, rawPassword)) {
+      return { success: true, isAdmin: true };
     }
 
     const team = this.getTeamByName(trimmedName);
@@ -172,17 +166,6 @@ export const StorageService = {
     // Password verification (preserve exact case and internal whitespace)
     if (team.password !== rawPassword) {
       return { success: false, errorMessage: 'Invalid team name or password.' };
-    }
-
-    // Device binding verification
-    const assignedTeamId = this.getAssignedDeviceTeamId();
-    if (assignedTeamId && assignedTeamId !== team.id) {
-      const assignedTeam = this.getTeam(assignedTeamId);
-      const assignedLabel = assignedTeam ? assignedTeam.name : assignedTeamId;
-      return {
-        success: false,
-        errorMessage: `Access denied: This device is assigned exclusively to "${assignedLabel}".`
-      };
     }
 
     // Authentication successful
@@ -196,8 +179,6 @@ export const StorageService = {
   getActiveTeamId(): string {
     const loggedIn = this.getLoggedInTeamId();
     if (loggedIn) return loggedIn;
-    const assigned = this.getAssignedDeviceTeamId();
-    if (assigned) return assigned;
     return safeGetItem<string>(STORAGE_KEYS.ACTIVE_TEAM_ID, 'TEAM-01');
   },
 
@@ -291,7 +272,6 @@ export const StorageService = {
       exportedAt: new Date().toISOString(),
       organizerConfig: this.getOrganizerConfig(),
       teams: this.getTeams(),
-      assignedDeviceTeamId: this.getAssignedDeviceTeamId(),
       loggedInTeamId: this.getLoggedInTeamId(),
       trialSession: this.getTrialSession(),
       trialChecklist: this.getTrialChecklist(),
@@ -309,7 +289,6 @@ export const StorageService = {
 
       if (data.organizerConfig) safeSetItem(STORAGE_KEYS.ORGANIZER_CONFIG, data.organizerConfig);
       if (data.teams) safeSetItem(STORAGE_KEYS.TEAMS, data.teams);
-      if (data.assignedDeviceTeamId !== undefined) safeSetItem(STORAGE_KEYS.ASSIGNED_DEVICE_TEAM_ID, data.assignedDeviceTeamId);
       if (data.trialSession) safeSetItem(STORAGE_KEYS.TRIAL_SESSION, data.trialSession);
       if (data.trialChecklist) safeSetItem(STORAGE_KEYS.TRIAL_CHECKLIST, data.trialChecklist);
       if (data.appMode) safeSetItem(STORAGE_KEYS.APP_MODE, data.appMode);

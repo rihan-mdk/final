@@ -10,10 +10,8 @@ import {
   ArrowLeft,
   FileSpreadsheet,
   FileCode,
-  Smartphone,
   TestTube,
   Key,
-  Check,
   Edit2
 } from 'lucide-react';
 import { StorageService } from '../lib/storage/storageService';
@@ -33,10 +31,9 @@ export const OrganizerDashboardScreen: React.FC<OrganizerDashboardScreenProps> =
   onLaunchEvent,
   onLaunchTrial
 }) => {
-  const [activeTab, setActiveTab] = useState<'teams' | 'device' | 'controls' | 'questions' | 'export'>('teams');
+  const [activeTab, setActiveTab] = useState<'teams' | 'controls' | 'questions' | 'export'>('teams');
   const [teams, setTeams] = useState<TeamRecord[]>(StorageService.getTeams());
   const [orgConfig, setOrgConfig] = useState<OrganizerConfig>(StorageService.getOrganizerConfig());
-  const [assignedTeamId, setAssignedTeamId] = useState<string | null>(StorageService.getAssignedDeviceTeamId());
   
   const [editingPasswordTeamId, setEditingPasswordTeamId] = useState<string | null>(null);
   const [newPassword, setNewPassword] = useState('');
@@ -60,25 +57,6 @@ export const OrganizerDashboardScreen: React.FC<OrganizerDashboardScreenProps> =
   const refreshData = () => {
     setTeams(StorageService.getTeams());
     setOrgConfig(StorageService.getOrganizerConfig());
-    setAssignedTeamId(StorageService.getAssignedDeviceTeamId());
-  };
-
-  const handleAssignDevice = (targetTeamId: string | null) => {
-    const targetTeam = targetTeamId ? teams.find(t => t.id === targetTeamId) : null;
-    const teamName = targetTeam ? targetTeam.name : 'Unassigned (Any Team)';
-
-    setConfirmModal({
-      isOpen: true,
-      title: 'Confirm Device Assignment',
-      message: `Assign this physical device to "${teamName}"? Once locked, participants will only be allowed to log into this device using this team's credentials.`,
-      confirmLabel: 'Confirm Assignment',
-      isDangerous: false,
-      action: () => {
-        StorageService.setAssignedDeviceTeamId(targetTeamId);
-        refreshData();
-        setConfirmModal(prev => ({ ...prev, isOpen: false }));
-      }
-    });
   };
 
   const handleStartEventMode = () => {
@@ -220,7 +198,7 @@ export const OrganizerDashboardScreen: React.FC<OrganizerDashboardScreenProps> =
               </h2>
               <span className="badge badge-amber">AUTHENTICATED ADMIN</span>
             </div>
-            <span className="text-caption">Field Command & 9-Device Configuration</span>
+            <span className="text-caption">Field Command & Team Telemetry</span>
           </div>
         </div>
       </div>
@@ -228,7 +206,7 @@ export const OrganizerDashboardScreen: React.FC<OrganizerDashboardScreenProps> =
       {/* Tabs */}
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(5, 1fr)',
+        gridTemplateColumns: 'repeat(4, 1fr)',
         gap: '0.25rem',
         backgroundColor: 'var(--bg-surface-elevated)',
         padding: '0.35rem',
@@ -237,7 +215,6 @@ export const OrganizerDashboardScreen: React.FC<OrganizerDashboardScreenProps> =
       }}>
         {[
           { key: 'teams', label: 'Teams', icon: Users },
-          { key: 'device', label: 'Device', icon: Smartphone },
           { key: 'controls', label: 'Controls', icon: Sliders },
           { key: 'questions', label: 'Answers', icon: BookOpen },
           { key: 'export', label: 'Export', icon: Download },
@@ -278,7 +255,6 @@ export const OrganizerDashboardScreen: React.FC<OrganizerDashboardScreenProps> =
           </div>
 
           {teams.map(team => {
-            const isAssignedToThisDevice = assignedTeamId === team.id;
             const isEditingPassword = editingPasswordTeamId === team.id;
 
             return (
@@ -287,7 +263,7 @@ export const OrganizerDashboardScreen: React.FC<OrganizerDashboardScreenProps> =
                 className="card"
                 style={{
                   backgroundColor: 'var(--bg-surface)',
-                  border: isAssignedToThisDevice ? '1.5px solid var(--accent-amber)' : '1px solid var(--border-structural)',
+                  border: '1px solid var(--border-structural)',
                   padding: '0.9rem'
                 }}
               >
@@ -297,8 +273,8 @@ export const OrganizerDashboardScreen: React.FC<OrganizerDashboardScreenProps> =
                       width: '34px',
                       height: '34px',
                       borderRadius: 'var(--radius-sm)',
-                      backgroundColor: isAssignedToThisDevice ? 'var(--accent-amber)' : 'var(--bg-surface-elevated)',
-                      color: isAssignedToThisDevice ? 'var(--text-dark)' : 'var(--accent-amber)',
+                      backgroundColor: 'var(--bg-surface-elevated)',
+                      color: 'var(--accent-amber)',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
@@ -311,11 +287,6 @@ export const OrganizerDashboardScreen: React.FC<OrganizerDashboardScreenProps> =
                     <div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
                         <span style={{ fontWeight: 700, fontSize: '0.95rem' }}>{team.name}</span>
-                        {isAssignedToThisDevice && (
-                          <span className="badge badge-amber" style={{ fontSize: '0.6rem', padding: '0.1rem 0.35rem' }}>
-                            THIS DEVICE
-                          </span>
-                        )}
                       </div>
                       <div style={{ fontSize: '0.72rem', fontFamily: 'var(--font-mono)', color: 'var(--text-secondary)' }}>
                         {team.id} • CALLSIGN: {team.callsign} • LVL {team.currentLevel}
@@ -424,91 +395,7 @@ export const OrganizerDashboardScreen: React.FC<OrganizerDashboardScreenProps> =
         </div>
       )}
 
-      {/* TAB 2: DEVICE ASSIGNMENT (ORGANIZER BINDING) */}
-      {activeTab === 'device' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          <div className="card" style={{ backgroundColor: 'var(--bg-surface-elevated)' }}>
-            <span className="text-caption">DEVICE LOCK & ASSIGNMENT</span>
-            <h3 style={{ fontSize: '1.1rem', fontWeight: 700, marginTop: '0.25rem' }}>
-              Dedicated Device Hardware Binding
-            </h3>
-            <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', lineHeight: 1.45, marginTop: '0.25rem' }}>
-              Assign this tablet or phone to one specific team. Once assigned, participants will ONLY be able to log in with that team's credentials.
-            </p>
-
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.5rem',
-              marginTop: '0.75rem',
-              padding: '0.65rem 0.85rem',
-              backgroundColor: 'var(--bg-surface)',
-              borderRadius: 'var(--radius-sm)',
-              border: '1px solid var(--border-structural)',
-              fontSize: '0.85rem',
-              fontFamily: 'var(--font-mono)'
-            }}>
-              <Smartphone size={18} color="var(--accent-amber)" />
-              <div>
-                <span style={{ color: 'var(--text-secondary)', fontSize: '0.7rem', display: 'block' }}>CURRENT HARDWARE STATUS:</span>
-                <span style={{ fontWeight: 700, color: assignedTeamId ? 'var(--status-green)' : 'var(--text-secondary)' }}>
-                  {assignedTeamId
-                    ? `LOCKED TO: ${teams.find(t => t.id === assignedTeamId)?.name} (${assignedTeamId})`
-                    : 'UNLOCKED / UNASSIGNED'}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-            <span className="text-caption">SELECT TEAM TO ASSIGN THIS DEVICE:</span>
-
-            {teams.map(team => {
-              const isCurrent = assignedTeamId === team.id;
-              return (
-                <button
-                  key={team.id}
-                  onClick={() => handleAssignDevice(team.id)}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    padding: '0.75rem 1rem',
-                    borderRadius: 'var(--radius-sm)',
-                    backgroundColor: isCurrent ? 'var(--bg-surface-elevated)' : 'var(--bg-surface)',
-                    border: isCurrent ? '1.5px solid var(--accent-amber)' : '1px solid var(--border-structural)',
-                    color: 'var(--text-primary)',
-                    textAlign: 'left'
-                  }}
-                >
-                  <div>
-                    <div style={{ fontWeight: 700, fontSize: '0.92rem' }}>{team.name}</div>
-                    <div style={{ fontSize: '0.72rem', fontFamily: 'var(--font-mono)', color: 'var(--text-secondary)' }}>
-                      {team.id} • PWD: {team.password}
-                    </div>
-                  </div>
-                  {isCurrent && (
-                    <div className="badge badge-amber">
-                      <Check size={12} strokeWidth={3} />
-                      ASSIGNED
-                    </div>
-                  )}
-                </button>
-              );
-            })}
-
-            <button
-              onClick={() => handleAssignDevice(null)}
-              className="btn btn-secondary"
-              style={{ marginTop: '0.5rem' }}
-            >
-              Clear Assignment (Allow Any Team)
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* TAB 3: CONTROLS & TRIAL MODE */}
+      {/* TAB 2: CONTROLS & TRIAL MODE */}
       {activeTab === 'controls' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           {/* Admin Trial Mode Card */}
@@ -616,13 +503,13 @@ export const OrganizerDashboardScreen: React.FC<OrganizerDashboardScreenProps> =
         </div>
       )}
 
-      {/* TAB 5: EXPORT & BACKUP */}
+      {/* TAB 4: EXPORT & BACKUP */}
       {activeTab === 'export' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           <div className="card">
             <span className="text-caption">CSV RESULTS EXPORT (9 TEAMS)</span>
             <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.45 }}>
-              Export this device's local team telemetry to a formatted CSV file. Organizers can merge CSV files from all 9 team devices at the conclusion of the event.
+              Export local team telemetry to a formatted CSV file across all 9 teams at any time during or at the conclusion of the event.
             </p>
             <button className="btn btn-primary" onClick={handleDownloadCsv}>
               <FileSpreadsheet size={18} />
@@ -633,7 +520,7 @@ export const OrganizerDashboardScreen: React.FC<OrganizerDashboardScreenProps> =
           <div className="card">
             <span className="text-caption">JSON BACKUP & RESTORE</span>
             <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.45 }}>
-              Save a full device state backup (settings, 9 teams, passwords, PIN hashes, and progress records) or restore from an existing JSON file.
+              Save a full state backup (settings, 9 teams, passwords, and progress records) or restore from an existing JSON file.
             </p>
 
             <div style={{ display: 'flex', gap: '0.5rem' }}>

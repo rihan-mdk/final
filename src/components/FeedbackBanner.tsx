@@ -1,8 +1,8 @@
 import React from 'react';
-import { CheckCircle2, AlertCircle, Info } from 'lucide-react';
+import { CheckCircle2, AlertCircle, Info, Sparkles } from 'lucide-react';
 
 interface FeedbackBannerProps {
-  status: 'correct' | 'incorrect' | 'neutral' | null;
+  status: 'correct' | 'incorrect' | 'close' | 'neutral' | null;
   message: string;
   onDismiss?: () => void;
 }
@@ -37,6 +37,33 @@ export const FeedbackBanner: React.FC<FeedbackBannerProps> = ({ status, message 
               {message}
             </div>
           )}
+        </div>
+      </div>
+    );
+  }
+
+  if (status === 'close') {
+    return (
+      <div
+        role="alert"
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.65rem',
+          padding: '0.85rem 1rem',
+          borderRadius: 'var(--radius-sm)',
+          backgroundColor: 'var(--accent-amber-muted)',
+          border: '1.5px solid var(--accent-amber)',
+          color: 'var(--accent-amber)',
+          fontFamily: 'var(--font-mono)',
+          fontWeight: 700,
+          fontSize: '0.92rem',
+          letterSpacing: '0.04em'
+        }}
+      >
+        <Sparkles size={20} />
+        <div>
+          <div>{message || "YOU'RE CLOSE! Try once again."}</div>
         </div>
       </div>
     );

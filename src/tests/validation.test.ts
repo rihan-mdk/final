@@ -127,4 +127,185 @@ describe('Answer Verification Engine', () => {
       expect(validateAnswer(q31, 'GOLD').isValid).toBe(false);
     });
   });
+
+  describe('Close-Answer Detection & "You\'re Close" Feedback Engine', () => {
+    it('1. Returns "YOU\'RE CLOSE! Try once again." for clearly close text answers', () => {
+      const q1 = getQ(1); // Answer: "Book"
+      // Typo with length difference of 1
+      const close1 = validateAnswer(q1, 'bok');
+      expect(close1.isValid).toBe(false);
+      expect(close1.isClose).toBe(true);
+      expect(close1.feedbackMessage).toBe("YOU'RE CLOSE! Try once again.");
+
+      // Plural variation
+      const close2 = validateAnswer(q1, 'books');
+      expect(close2.isValid).toBe(false);
+      expect(close2.isClose).toBe(true);
+      expect(close2.feedbackMessage).toBe("YOU'RE CLOSE! Try once again.");
+
+      const q2 = getQ(2); // Answer: "Footprints"
+      const close3 = validateAnswer(q2, 'footprnt');
+      expect(close3.isValid).toBe(false);
+      expect(close3.isClose).toBe(true);
+      expect(close3.feedbackMessage).toBe("YOU'RE CLOSE! Try once again.");
+    });
+
+    it('2. Distinguishes completely unrelated incorrect answers as standard INCORRECT ANSWER', () => {
+      const q1 = getQ(1); // Answer: "Book"
+      const wrong1 = validateAnswer(q1, 'automobile');
+      expect(wrong1.isValid).toBe(false);
+      expect(wrong1.isClose).toBe(false);
+      expect(wrong1.feedbackMessage).toBe('INCORRECT ANSWER');
+
+      const wrong2 = validateAnswer(q1, 'notebook');
+      expect(wrong2.isValid).toBe(false);
+      expect(wrong2.isClose).toBe(false);
+      expect(wrong2.feedbackMessage).toBe('INCORRECT ANSWER');
+
+      const q2 = getQ(2);
+      const wrong3 = validateAnswer(q2, 'bicycle');
+      expect(wrong3.isValid).toBe(false);
+      expect(wrong3.isClose).toBe(false);
+      expect(wrong3.feedbackMessage).toBe('INCORRECT ANSWER');
+    });
+
+    it('3. Handles numeric answers that are close vs completely outside tolerance', () => {
+      const q3 = getQ(3); // Answer: 7.5 degrees
+      // Within narrow margin (7.0 is ~6.67% diff)
+      const closeNum1 = validateAnswer(q3, '7.0');
+      expect(closeNum1.isValid).toBe(false);
+      expect(closeNum1.isClose).toBe(true);
+      expect(closeNum1.feedbackMessage).toBe("YOU'RE CLOSE! Try once again.");
+
+      const closeNum2 = validateAnswer(q3, '8.0');
+      expect(closeNum2.isValid).toBe(false);
+      expect(closeNum2.isClose).toBe(true);
+      expect(closeNum2.feedbackMessage).toBe("YOU'RE CLOSE! Try once again.");
+
+      // Completely outside tolerance
+      const farNum1 = validateAnswer(q3, '0');
+      expect(farNum1.isValid).toBe(false);
+      expect(farNum1.isClose).toBe(false);
+      expect(farNum1.feedbackMessage).toBe('INCORRECT ANSWER');
+
+      const farNum2 = validateAnswer(q3, '15');
+      expect(farNum2.isValid).toBe(false);
+      expect(farNum2.isClose).toBe(false);
+      expect(farNum2.feedbackMessage).toBe('INCORRECT ANSWER');
+
+      const q8 = getQ(8); // Answer: 8
+      // Off-by-one on integer >= 8 is close
+      const close8 = validateAnswer(q8, '9');
+      expect(close8.isValid).toBe(false);
+      expect(close8.isClose).toBe(true);
+      expect(close8.feedbackMessage).toBe("YOU'RE CLOSE! Try once again.");
+
+      // Arbitrary number is not close
+      const far8 = validateAnswer(q8, '24');
+      expect(far8.isValid).toBe(false);
+      expect(far8.isClose).toBe(false);
+      expect(far8.feedbackMessage).toBe('INCORRECT ANSWER');
+    });
+
+    it('4. Handles coordinate closeness (swapped axes, off-by-one coordinate)', () => {
+      const q22 = getQ(22); // Answer: (6,1)
+      // Swapped axes (1,6) is a classic close mistake
+      const closeCoord1 = validateAnswer(q22, '(1,6)');
+      expect(closeCoord1.isValid).toBe(false);
+      expect(closeCoord1.isClose).toBe(true);
+      expect(closeCoord1.feedbackMessage).toBe("YOU'RE CLOSE! Try once again.");
+
+      // One axis off by 1: (6,2)
+      const closeCoord2 = validateAnswer(q22, '(6,2)');
+      expect(closeCoord2.isValid).toBe(false);
+      expect(closeCoord2.isClose).toBe(true);
+      expect(closeCoord2.feedbackMessage).toBe("YOU'RE CLOSE! Try once again.");
+
+      // Far away coordinates
+      const farCoord = validateAnswer(q22, '(10,20)');
+      expect(farCoord.isValid).toBe(false);
+      expect(farCoord.isClose).toBe(false);
+      expect(farCoord.feedbackMessage).toBe('INCORRECT ANSWER');
+    });
+
+    it('5. Handles sequence closeness (minor element mismatch, reversal)', () => {
+      const q25 = getQ(25); // Answer: 3,5,1,8
+      // Single element mismatch
+      const closeSeq1 = validateAnswer(q25, '3,5,1,9');
+      expect(closeSeq1.isValid).toBe(false);
+      expect(closeSeq1.isClose).toBe(true);
+      expect(closeSeq1.feedbackMessage).toBe("YOU'RE CLOSE! Try once again.");
+
+      // Reversal
+      const closeSeq2 = validateAnswer(q25, '8,1,5,3');
+      expect(closeSeq2.isValid).toBe(false);
+      expect(closeSeq2.isClose).toBe(true);
+      expect(closeSeq2.feedbackMessage).toBe("YOU'RE CLOSE! Try once again.");
+
+      // Unrelated sequence
+      const farSeq = validateAnswer(q25, '9,9,9,9');
+      expect(farSeq.isValid).toBe(false);
+      expect(farSeq.isClose).toBe(false);
+      expect(farSeq.feedbackMessage).toBe('INCORRECT ANSWER');
+    });
+
+    it('6. Handles probability closeness (complement probability, close fraction)', () => {
+      const q27 = getQ(27); // Answer: 1/4 (0.25)
+      // Complement probability (3/4 = 0.75)
+      const closeProb1 = validateAnswer(q27, '3/4');
+      expect(closeProb1.isValid).toBe(false);
+      expect(closeProb1.isClose).toBe(true);
+      expect(closeProb1.feedbackMessage).toBe("YOU'RE CLOSE! Try once again.");
+
+      // Close fraction / decimal (0.22 is within 0.05)
+      const closeProb2 = validateAnswer(q27, '0.22');
+      expect(closeProb2.isValid).toBe(false);
+      expect(closeProb2.isClose).toBe(true);
+      expect(closeProb2.feedbackMessage).toBe("YOU'RE CLOSE! Try once again.");
+
+      // Arbitrary probability
+      const farProb = validateAnswer(q27, '0.9');
+      expect(farProb.isValid).toBe(false);
+      expect(farProb.isClose).toBe(false);
+      expect(farProb.feedbackMessage).toBe('INCORRECT ANSWER');
+    });
+
+    it('7. Handles binary closeness (1-bit flip vs arbitrary binary)', () => {
+      const q37 = getQ(37); // Answer: 1000
+      // 1 bit flip (Hamming distance 1)
+      const closeBin1 = validateAnswer(q37, '1001');
+      expect(closeBin1.isValid).toBe(false);
+      expect(closeBin1.isClose).toBe(true);
+      expect(closeBin1.feedbackMessage).toBe("YOU'RE CLOSE! Try once again.");
+
+      // Arbitrary binary (Hamming distance 3 or different length)
+      const farBin1 = validateAnswer(q37, '1111');
+      expect(farBin1.isValid).toBe(false);
+      expect(farBin1.isClose).toBe(false);
+      expect(farBin1.feedbackMessage).toBe('INCORRECT ANSWER');
+
+      const farBin2 = validateAnswer(q37, '10');
+      expect(farBin2.isValid).toBe(false);
+      expect(farBin2.isClose).toBe(false);
+      expect(farBin2.feedbackMessage).toBe('INCORRECT ANSWER');
+    });
+
+    it('8. Ensures feedback never leaks or reveals accepted answers', () => {
+      const testCases = [
+        { q: getQ(1), input: 'bok', accepted: 'Book' },
+        { q: getQ(3), input: '7.0', accepted: '7.5' },
+        { q: getQ(22), input: '(1,6)', accepted: '(6,1)' },
+        { q: getQ(27), input: '3/4', accepted: '1/4' },
+        { q: getQ(37), input: '1001', accepted: '1000' }
+      ];
+
+      testCases.forEach(({ q, input, accepted }) => {
+        const res = validateAnswer(q, input);
+        expect(res.feedbackMessage).toBe("YOU'RE CLOSE! Try once again.");
+        // Must never disclose the accepted answer or difference
+        expect(res.feedbackMessage.toLowerCase()).not.toContain(accepted.toLowerCase());
+        expect(res.matchedAnswer).toBeUndefined();
+      });
+    });
+  });
 });

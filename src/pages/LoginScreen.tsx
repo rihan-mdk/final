@@ -1,25 +1,22 @@
 import React, { useState } from 'react';
-import { Eye, EyeOff, Lock, Shield } from 'lucide-react';
+import { Eye, EyeOff, Lock } from 'lucide-react';
 import { StorageService } from '../lib/storage/storageService';
 import { TeamRecord } from '../types';
 
 interface LoginScreenProps {
   onLoginSuccess: (team: TeamRecord) => void;
-  onOpenOrganizer: () => void;
+  onAdminLoginSuccess: () => void;
 }
 
 export const LoginScreen: React.FC<LoginScreenProps> = ({
   onLoginSuccess,
-  onOpenOrganizer
+  onAdminLoginSuccess
 }) => {
   const [teamName, setTeamName] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-
-  const assignedTeamId = StorageService.getAssignedDeviceTeamId();
-  const assignedTeam = assignedTeamId ? StorageService.getTeam(assignedTeamId) : null;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,9 +31,13 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
     setLoading(true);
 
     const result = StorageService.authenticateTeam(trimmed, password);
-    if (result.success && result.team) {
+    if (result.success) {
       setLoading(false);
-      onLoginSuccess(result.team);
+      if (result.isAdmin) {
+        onAdminLoginSuccess();
+      } else if (result.team) {
+        onLoginSuccess(result.team);
+      }
     } else {
       setLoading(false);
       setErrorMessage(result.errorMessage || 'Invalid team name or password.');
@@ -52,34 +53,6 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
       padding: '1.5rem',
       backgroundColor: 'var(--bg-canvas)'
     }}>
-      {/* Top Header / Organizer Shield Shortcut */}
-      <div style={{
-        position: 'absolute',
-        top: '1rem',
-        right: '1rem',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '0.5rem'
-      }}>
-        <button
-          onClick={onOpenOrganizer}
-          title="Organizer Console"
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: '36px',
-            height: '36px',
-            borderRadius: 'var(--radius-sm)',
-            backgroundColor: 'var(--bg-surface-elevated)',
-            border: '1px solid var(--border-structural)',
-            color: 'var(--accent-amber)'
-          }}
-        >
-          <Shield size={18} />
-        </button>
-      </div>
-
       <div style={{
         width: '100%',
         maxWidth: '400px',
@@ -97,26 +70,8 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
             THE HUNT EXPEDITION
           </h1>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginTop: '0.25rem' }}>
-            Enter your assigned team credentials to begin.
+            Enter your team credentials to begin.
           </p>
-
-          {assignedTeam && (
-            <div style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '0.4rem',
-              marginTop: '0.75rem',
-              padding: '0.25rem 0.65rem',
-              borderRadius: 'var(--radius-sm)',
-              backgroundColor: 'var(--bg-surface-elevated)',
-              border: '1px solid var(--border-structural)',
-              fontSize: '0.75rem',
-              color: 'var(--accent-amber)',
-              fontFamily: 'var(--font-mono)'
-            }}>
-              <span>DEVICE BOUND TO: {assignedTeam.name}</span>
-            </div>
-          )}
         </div>
 
         {/* Login Form Card */}

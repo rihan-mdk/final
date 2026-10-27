@@ -67,11 +67,11 @@ export interface OrganizerConfig {
   eventStarted: boolean;
   eventStartTime: string | null;
   allowManualCheckpointBypass: boolean;
-  assignedTeamId: string | null; // Device binding: locked to specific team ID
 }
 
 export interface ValidationResult {
   isValid: boolean;
+  isClose?: boolean;
   normalizedInput: string;
   feedbackMessage: string;
   matchedAnswer?: string;
@@ -87,6 +87,7 @@ export interface TrialQuestionStatus {
 
 export interface AuthResult {
   success: boolean;
+  isAdmin?: boolean;
   team?: TeamRecord;
   errorMessage?: string;
 }

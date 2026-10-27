@@ -16,7 +16,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
     }, 400);
 
     const t2 = setTimeout(() => {
-      setStatus('Verifying local storage & teams (8 devices)...');
+      setStatus('Verifying local storage & 9 teams...');
       setProgress(80);
     }, 800);
 

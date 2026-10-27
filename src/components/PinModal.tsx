@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import { Shield, KeyRound, AlertCircle, X } from 'lucide-react';
+import { Shield, KeyRound, AlertCircle, X, Eye, EyeOff } from 'lucide-react';
 import { StorageService } from '../lib/storage/storageService';
-import { generateSalt, hashPin, verifyPin } from '../lib/security/pinAuth';
 
 interface PinModalProps {
   isOpen: boolean;
@@ -10,58 +9,34 @@ interface PinModalProps {
 }
 
 export const PinModal: React.FC<PinModalProps> = ({ isOpen, onSuccess, onClose }) => {
-  const [pin, setPin] = useState('');
-  const [confirmPin, setConfirmPin] = useState('');
+  const [username, setUsername] = useState('cryptic');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   if (!isOpen) return null;
 
-  const config = StorageService.getOrganizerConfig();
-  const isFirstTime = !config.isSetupComplete;
-
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
 
-    if (pin.length < 4) {
-      setError('PIN must be at least 4 digits/characters.');
+    const cleanUser = username.trim();
+    if (!cleanUser || !password) {
+      setError('Please enter both administrator name and password.');
       return;
     }
 
     setLoading(true);
-    try {
-      if (isFirstTime) {
-        if (pin !== confirmPin) {
-          setError('PIN confirmation does not match.');
-          setLoading(false);
-          return;
-        }
 
-        const salt = generateSalt();
-        const pinHash = await hashPin(pin, salt);
-        StorageService.saveOrganizerConfig({
-          ...config,
-          pinHash,
-          salt,
-          isSetupComplete: true
-        });
-        setPin('');
-        setConfirmPin('');
-        onSuccess();
-      } else {
-        const isValid = await verifyPin(pin, config.salt, config.pinHash);
-        if (isValid) {
-          setPin('');
-          onSuccess();
-        } else {
-          setError('Incorrect Organizer PIN. Please try again.');
-        }
-      }
-    } catch (err) {
-      setError('An authentication error occurred.');
-    } finally {
+    const isValid = StorageService.authenticateAdmin(cleanUser, password);
+    if (isValid) {
       setLoading(false);
+      setPassword('');
+      onSuccess();
+    } else {
+      setLoading(false);
+      setError('Invalid administrator credentials.');
     }
   };
 
@@ -105,10 +80,10 @@ export const PinModal: React.FC<PinModalProps> = ({ isOpen, onSuccess, onClose }
             </div>
             <div>
               <h3 style={{ fontSize: '1.1rem', fontWeight: 700 }}>
-                {isFirstTime ? 'Organizer Setup' : 'Organizer Authentication'}
+                Administrator Authentication
               </h3>
               <span className="text-caption">
-                {isFirstTime ? 'Establish Local PIN' : 'Restricted Access'}
+                Organizer Restricted Control
               </span>
             </div>
           </div>
@@ -118,46 +93,60 @@ export const PinModal: React.FC<PinModalProps> = ({ isOpen, onSuccess, onClose }
         </div>
 
         <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.45 }}>
-          {isFirstTime
-            ? 'Set a master PIN for this device. This PIN will be required to access team telemetry, modify settings, or manage Event Mode.'
-            : 'Enter your Organizer PIN to access controls, verify answers, and view event progress.'}
+          Enter administrator credentials to unlock organizer controls and checkpoint verifications.
         </p>
 
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
           <div>
-            <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '0.35rem' }}>
-              {isFirstTime ? 'CREATE ORGANIZER PIN' : 'ENTER ORGANIZER PIN'}
+            <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '0.35rem', fontFamily: 'var(--font-mono)' }}>
+              ADMIN USERNAME
             </label>
             <input
-              type="password"
-              inputMode="numeric"
-              maxLength={12}
-              value={pin}
-              onChange={(e) => setPin(e.target.value)}
-              placeholder="••••"
-              autoFocus
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="cryptic"
               className="input-field"
-              style={{ textAlign: 'center', letterSpacing: '0.35em', fontSize: '1.3rem' }}
+              autoComplete="off"
+              spellCheck="false"
             />
           </div>
 
-          {isFirstTime && (
-            <div>
-              <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '0.35rem' }}>
-                CONFIRM ORGANIZER PIN
-              </label>
+          <div>
+            <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '0.35rem', fontFamily: 'var(--font-mono)' }}>
+              ADMIN PASSWORD
+            </label>
+            <div style={{ position: 'relative' }}>
               <input
-                type="password"
-                inputMode="numeric"
-                maxLength={12}
-                value={confirmPin}
-                onChange={(e) => setConfirmPin(e.target.value)}
-                placeholder="••••"
+                type={showPassword ? 'text' : 'password'}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
                 className="input-field"
-                style={{ textAlign: 'center', letterSpacing: '0.35em', fontSize: '1.3rem' }}
+                style={{ paddingRight: '3rem' }}
+                autoFocus
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+                style={{
+                  position: 'absolute',
+                  right: '0.5rem',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  width: '36px',
+                  height: '36px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: 'var(--text-secondary)'
+                }}
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
             </div>
-          )}
+          </div>
 
           {error && (
             <div style={{
@@ -169,16 +158,13 @@ export const PinModal: React.FC<PinModalProps> = ({ isOpen, onSuccess, onClose }
               backgroundColor: 'var(--status-red-bg)',
               border: '1px solid var(--status-red-border)',
               color: 'var(--status-red)',
-              fontSize: '0.8rem'
+              fontSize: '0.8rem',
+              fontWeight: 600
             }}>
               <AlertCircle size={16} />
               <span>{error}</span>
             </div>
           )}
-
-          <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', lineHeight: 1.4 }}>
-            Operational notice: The local PIN is an operational device safeguard, not absolute security against someone inspecting local browser storage.
-          </div>
 
           <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.5rem' }}>
             <button type="button" className="btn btn-secondary" onClick={onClose} style={{ flex: 1 }}>
@@ -186,7 +172,7 @@ export const PinModal: React.FC<PinModalProps> = ({ isOpen, onSuccess, onClose }
             </button>
             <button type="submit" className="btn btn-primary" disabled={loading} style={{ flex: 1 }}>
               <KeyRound size={16} />
-              {isFirstTime ? 'Save PIN' : 'Unlock'}
+              <span>Unlock</span>
             </button>
           </div>
         </form>

@@ -68,7 +68,7 @@ export const LevelCompleteScreen: React.FC<LevelCompleteScreenProps> = ({
         
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem', marginTop: '0.35rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.88rem' }}>
-            <span style={{ color: 'var(--text-secondary)' }}>Team Assigned:</span>
+            <span style={{ color: 'var(--text-secondary)' }}>Team:</span>
             <span style={{ fontWeight: 700, fontFamily: 'var(--font-mono)' }}>{team.name} ({team.id})</span>
           </div>
 

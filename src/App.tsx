@@ -272,7 +272,10 @@ export const App: React.FC = () => {
         {currentView === 'login' && (
           <LoginScreen
             onLoginSuccess={handleLoginSuccess}
-            onOpenOrganizer={() => navigateToView('organizer-dashboard')}
+            onAdminLoginSuccess={() => {
+              setIsAdminAuthenticated(true);
+              setCurrentView('organizer-dashboard');
+            }}
           />
         )}
 

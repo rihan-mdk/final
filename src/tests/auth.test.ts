@@ -101,20 +101,42 @@ describe('Authentication and Access Control (Authoritative Specification)', () =
     expect(activeTeamId).toBe('TEAM-01');
   });
 
-  it('8. Device assigned to one team rejects another team login attempt', () => {
-    // Organizer locks device to TEAM-01 (Code3SD)
-    StorageService.setAssignedDeviceTeamId('TEAM-01');
-    expect(StorageService.getAssignedDeviceTeamId()).toBe('TEAM-01');
+  it('8. Allows all nine independent teams to log in on any device without device binding', () => {
+    // First team logs in
+    const team1Login = StorageService.authenticateTeam('Code3SD', 'Code3SD@yit');
+    expect(team1Login.success).toBe(true);
+    expect(team1Login.isAdmin).toBeFalsy();
+    expect(StorageService.getLoggedInTeamId()).toBe('TEAM-01');
 
-    // Attempt login as TEAM-02 (IMPACTX) on this device
-    const rejected = StorageService.authenticateTeam('IMPACTX', 'IMPACTX@yit');
-    expect(rejected.success).toBe(false);
-    expect(rejected.errorMessage).toContain('This device is assigned exclusively');
+    // Team 1 logs out
+    StorageService.logout();
+    expect(StorageService.getLoggedInTeamId()).toBeNull();
 
-    // Attempt login as TEAM-01 (Code3SD) on this device -> SUCESSS
-    const allowed = StorageService.authenticateTeam('Code3SD', 'Code3SD@yit');
-    expect(allowed.success).toBe(true);
-    expect(allowed.team?.id).toBe('TEAM-01');
+    // Another team logs in on the exact same app/phone without rejection
+    const team2Login = StorageService.authenticateTeam('IMPACTX', 'IMPACTX@yit');
+    expect(team2Login.success).toBe(true);
+    expect(team2Login.isAdmin).toBeFalsy();
+    expect(team2Login.team?.id).toBe('TEAM-02');
+    expect(StorageService.getLoggedInTeamId()).toBe('TEAM-02');
+
+    // All remaining teams can authenticate on the same application instance without device locks
+    const remainingTeams = [
+      { name: 'THE COGNIVEX', pass: 'THE COGNIVEX@yit', id: 'TEAM-03' },
+      { name: 'Ctrl Alt Elit', pass: 'Ctrl Alt Elit@yit', id: 'TEAM-04' },
+      { name: 'Non-syntax Error', pass: 'Non-syntax Error@yit', id: 'TEAM-05' },
+      { name: 'The Lost Five', pass: 'The Lost Five@yit', id: 'TEAM-06' },
+      { name: 'Team executives', pass: 'Team executives@yit', id: 'TEAM-07' },
+      { name: 'Zedox', pass: 'Zedox@yit', id: 'TEAM-08' },
+      { name: 'MindX', pass: 'MindX@yit', id: 'TEAM-09' }
+    ];
+
+    remainingTeams.forEach(t => {
+      StorageService.logout();
+      const login = StorageService.authenticateTeam(t.name, t.pass);
+      expect(login.success).toBe(true);
+      expect(login.team?.id).toBe(t.id);
+      expect(StorageService.getLoggedInTeamId()).toBe(t.id);
+    });
   });
 
   it('9. Maintains separate progress for each team', () => {
@@ -237,5 +259,26 @@ describe('Authentication and Access Control (Authoritative Specification)', () =
 
     // Event session is unaffected
     expect(StorageService.getEventSession('TEAM-04')?.currentQuestionId).toBe(25);
+  });
+
+  it('14. Authenticates administrator with name: "cryptic" and password: "adnan"', () => {
+    // Via authenticateAdmin
+    expect(StorageService.authenticateAdmin('cryptic', 'adnan')).toBe(true);
+    expect(StorageService.authenticateAdmin('  cryptic  ', 'adnan')).toBe(true); // trims whitespace
+    expect(StorageService.authenticateAdmin('CRYPTIC', 'adnan')).toBe(true); // case-insensitive username
+
+    // Via main login flow (authenticateTeam)
+    const adminLogin = StorageService.authenticateTeam('cryptic', 'adnan');
+    expect(adminLogin.success).toBe(true);
+    expect(adminLogin.isAdmin).toBe(true);
+  });
+
+  it('15. Rejects invalid administrator credentials', () => {
+    expect(StorageService.authenticateAdmin('cryptic', 'wrongpassword')).toBe(false);
+    expect(StorageService.authenticateAdmin('admin', 'adnan')).toBe(false);
+
+    const failedAdminLogin = StorageService.authenticateTeam('cryptic', 'wrongpass');
+    expect(failedAdminLogin.success).toBe(false);
+    expect(failedAdminLogin.isAdmin).toBeUndefined();
   });
 });
